@@ -4,25 +4,25 @@ import { useGetCategoriesQuery } from '../../../api/category';
 import { IBook } from '../../../interfaces/book';
 import { useGetAuthorsQuery } from '../../../api/author';
 import { useAddProductMutation } from '../../../api/product';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import type { UploadProps } from 'antd/es/upload/interface';
-import {LoadingOutlined} from '@ant-design/icons';
+import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const ProductAdd = () => {
     const { data: categories } = useGetCategoriesQuery()
     const { data: authors } = useGetAuthorsQuery()
-    const [addBook, { isLoading, isSuccess }] = useAddProductMutation()
-    const [fileList, setFileList] = useState([]);
+    const [addBook] = useAddProductMutation()
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
     const navigate = useNavigate()
 
     const onFinish = (values: IBook) => {
         console.log('Form values:', values);
-        // console.log('Uploaded files:', fileList);
+        console.log('Uploaded files:', fileList);
         const imageObjects = fileList.map(file => ({
-            url: file.url,
-            publicId: file.publicId
+            url: file.response[0].url,
+            publicId: file.response[0].publicId
         }));
         values.images = imageObjects;
         addBook(values).unwrap().then((data) => {
@@ -38,34 +38,15 @@ const ProductAdd = () => {
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
         setFileList(newFileList);
 
-    const uploadImages = async options => {
-        // console.log(options);
-        const { onSuccess, onError, file } = options;
 
-        const formData = new FormData()
-
-        formData.append("images", file)
-        try {
-            const res = await axios.post("http://localhost:8088/api/images/upload", formData)
-            const { data } = res
-            if (data && data.publicId) {
-                file.publicId = data.publicId;
-                file.url = data.url;
-
-                onSuccess("Ok");
-            } else {
-                onError({ message: "Không có publicId trong phản hồi" });
-            }
-        } catch (err) {
-            onError({ err });
-        }
-    }
-    const handleRemoveImage = async (file) => {
+    const handleRemoveImage = async (file:UploadFile) => {
+        console.log(file);
         // Gọi API xóa ảnh trên máy chủ
         // console.log(file);
+        
         try {
-            await axios.delete(`http://localhost:8088/api/images/remove/${file.publicId}`);
-    
+            await axios.delete(`http://localhost:8088/api/images/remove/${file.response[0].publicId}`);
+
             notification.success({
                 message: "Xóa ảnh thành công",
                 duration: 5,
@@ -79,7 +60,8 @@ const ProductAdd = () => {
 
     return (
         <>  <div className='flex items-center justify-between'>            <h2>Thêm mới sản phẩm</h2>
-            <Button className='m-4' type="primary" ghost>Quay lại</Button></div>
+                  <Link to={'/admin/products'} className='m-4 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700' >Quay lại</Link></div>
+
 
             <Form className='m-auto'
                 name="basic"
@@ -139,7 +121,8 @@ const ProductAdd = () => {
                 >
                     <Select
                         style={{ width: '100%' }}
-                        placeholder="Tác giả"
+                        placeholder="Danh mục"
+                        mode='tags'
                     >
                         {categories?.map((category) => (
                             <Select.Option key={category._id} value={category._id}>
@@ -158,12 +141,12 @@ const ProductAdd = () => {
                 </Form.Item>
                 <Form.Item name="images"
                 >
-                    <Upload
+                    <Upload name='images'
                         multiple
+                        action={'http://localhost:8088/api/images/upload'}
                         fileList={fileList}
                         onChange={handleChange}
                         listType="picture"
-                        customRequest={uploadImages}
                         iconRender={() => <LoadingOutlined />}
                         onRemove={(file) => handleRemoveImage(file)}
                     >

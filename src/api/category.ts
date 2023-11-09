@@ -21,7 +21,7 @@ const categoryApi = createApi({
     }),
     createCategory: builder.mutation<ICategory, Partial<ICategory>>({
       query: (category) => ({
-        url: `/categories`,
+        url: `/categories/add`,
         method: 'POST',
         body: category,
       }),
@@ -29,7 +29,7 @@ const categoryApi = createApi({
     }),
     updateCategory: builder.mutation<ICategory, Partial<ICategory>>({
       query: ( category ) => ({
-        url: `/categories/${category._id}`,
+        url: `/categories/${category._id}/edit`,
         method: 'PATCH',
         body: category,
       }),

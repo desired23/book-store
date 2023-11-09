@@ -31,7 +31,7 @@ const items: MenuProps['items'] = [
   {
     key: '5',
     icon: <UploadOutlined />,
-    label: <Link to={'/admin/dashboard'}>Khuyến mại</Link>,
+    label: <Link to={'/admin/vouchers'}>Khuyến mại</Link>,
   },
   
 ]

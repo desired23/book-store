@@ -9,9 +9,11 @@ export interface IBook {
   categoryId: CategoryIdType[];
   images: { url: string; publicId: string }[];
   price: number;
+  discount: number
   stock: number;
   publishedAt: Date;
   soldCount: number;
   createdAt: Date
-  updatedAt: Date
+  updatedAt: Date,
+  averageRating: string | null
 }

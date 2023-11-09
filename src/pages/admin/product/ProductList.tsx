@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Divider, Popconfirm, Radio, Skeleton, Table, notification } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Divider, Input, Popconfirm, Radio, Select, Skeleton, Space, Table, Tooltip, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useDeleteProductMutation, useGetProductsQuery } from '../../../api/product';
 import { IBook } from '../../../interfaces/book';
@@ -11,6 +11,10 @@ import ImageList from '../../../components/layouts/Common/imageList';
 import moment from 'moment';
 import Search from 'antd/es/input/Search';
 import type { NotificationPlacement } from 'antd/es/notification/interface';
+import { useGetCategoriesQuery } from '../../../api/category';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { loadBooks } from '../../../store/book/productSlice';
 
 interface DataType {
   key: string;
@@ -36,17 +40,37 @@ const rowSelection = {
 };
 const Context = React.createContext({ name: 'Xóa' });
 
-
+const optionsSearch = [{
+  value: 'author',
+  label: 'Tác giả',
+},
+{
+  value: 'category',
+  label: 'Danh mục',
+},
+{
+  value: 'name',
+  label: 'Tên sách',
+},]
 const ProductList = () => {
+
   const [searchText, setSearchText] = useState('')
+  const [searchFilter, setSearchFilter] = useState('')
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>('checkbox');
   const { data: bookData, isLoading } = useGetProductsQuery()
+  const { data: categories } = useGetCategoriesQuery()
   const [removeBook, { isLoading: isRemoveLoading }] = useDeleteProductMutation()
-
-
+  const books = useSelector((state: RootState) => state.products.books);
+  const dispatch = useDispatch()
+  console.log(books);
+  useEffect(() => {
+    if (bookData && bookData.length > 0) {
+      dispatch(loadBooks(bookData))
+    }
+  }, [bookData])
   const confirm = (id: string) => {
     console.log(id);
-    removeBook(id).unwrap().then(( data ) => {
+    removeBook(id).unwrap().then((data) => {
       openNotification('topRight', data?.title)
     })
   }
@@ -58,6 +82,34 @@ const ProductList = () => {
       placement,
     });
   };
+
+  const filterData = () => {
+    let filteredData = Array.isArray(books) ? books : [];
+
+    if (searchFilter === 'author') {
+      // Lọc dựa trên tác giả
+      filteredData = filteredData.filter((item) => {
+        return item.authorId.some((author) =>
+          author.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+      });
+    } else if (searchFilter === 'category') {
+      // Lọc dựa trên danh mục
+      filteredData = filteredData.filter((item) => {
+        return item.categoryId.some((category) =>
+          category.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+      });
+    } else if (searchFilter === 'name') {
+      // Lọc dựa trên tên sách
+      filteredData = filteredData.filter((item) =>
+        item.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return filteredData;
+  };
+
   const columns: ColumnsType<DataType> = [
     {
       title: 'Title',
@@ -83,17 +135,6 @@ const ProductList = () => {
       key: 'price',
     },
     {
-      title: 'Book Images',
-      dataIndex: 'images',
-      key: 'image',
-      render: (text) => <ImageList images={text || [""]} />
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
       title: 'Category',
       dataIndex: 'categoryId',
       key: 'categoryId',
@@ -101,10 +142,27 @@ const ProductList = () => {
         // Render danh sách danh mục dựa trên categoryId
         <ul>
           {categoryId.map((item) => (
-            <li key={item._id}>{item.name}</li>
+            <Link key={item._id} to={`#`}><Button>{item.name}</Button></Link>
           ))}
         </ul>
       ),
+    }, 
+    {
+      title: 'Book Images',
+      dataIndex: 'images',
+      key: 'image',
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (text) => <ImageList images={text || [""]} />
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      ellipsis: {
+        showTitle: false,
+      },
     },
     {
       title: 'Stock',
@@ -161,7 +219,7 @@ const ProductList = () => {
   ];
 
 
-  const data: DataType[] = (Array.isArray(bookData) ? bookData : []).filter(item => item.title.toLowerCase().includes(searchText.toLowerCase())).map((item: IBook) => ({
+  const data: DataType[] = filterData().map((item: IBook) => ({
     key: item._id || 'defaultKey',
     title: item.title,
     authorId: item.authorId,
@@ -203,11 +261,19 @@ const ProductList = () => {
             </Button>
           </Popconfirm>
           <Button type="primary" ghost className="ml-2">
-            <Link to={`/admin/products/add`}>Thêm mới</Link>
+            <Link to={`/admin/product/add`}>Thêm mới</Link>
           </Button>
         </>
         <Divider />
-        <Search className='w-1/3 pb-4 ' placeholder="input search " enterButton onChange={(e) => setSearchText(e.target.value)} />
+        <div>
+          <Space direction="vertical" size="middle">
+            <Space.Compact>
+              <Select onChange={(e) => setSearchFilter(e)} placeholder='Tìm theo' options={optionsSearch} />
+              <Input placeholder='Tìm kiếm' onChange={(e) => setSearchText(e.target.value)} />
+            </Space.Compact>
+          </Space>
+        </div>
+
         {isLoading ? <Skeleton /> : <Table className='w-fit'
           rowSelection={{
             type: selectionType,
