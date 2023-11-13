@@ -1,28 +1,76 @@
-import { Modal, Tabs, TabsProps } from 'antd'
-import React, { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Button, Dropdown, MenuProps, Modal, Tabs, TabsProps } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import Login from '../../pages/Login';
 import Register from '../../pages/Register';
+import { RootState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../store/auth/authSlice';
+import { PURGE } from 'redux-persist';
+import { useGetCartQuery } from '../../api/cart';
+import { ICartState, loadCart } from '../../store/cart/cartSlice';
 
 const LayoutClient = () => {
   const [modal2Open, setModal2Open] = useState(false);
+  const authState = useSelector((state: RootState) => state.user);
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { data: cartData, isSuccess: fetchCartSuccess } = useGetCartQuery()
   const onChange = (key: string) => {
     console.log(key);
   };
 
-  const items: TabsProps['items'] = [
+  const tabItems: TabsProps['items'] = [
     {
       key: '1',
       label: 'Đăng nhập',
-      children: <Login />
+      children: <Login setModalState={setModal2Open} />
     },
     {
       key: '2',
       label: 'Đăng ký',
-      children: <Register />
+      children: <Register setModalState={setModal2Open} />
 
     }
   ];
+  const [items, setItems] = useState<MenuProps['items']>([
+    {
+      label: 'Thông tin tài khoản',
+      key: '1',
+    },
+    {
+      label: 'Đơn hàng',
+      key: '2',
+    },
+    {
+      label: <Link to={`/home`} onClick={() => handleLogout()} >Đăng xuất</Link>,
+      key: '3',
+    },
+  ]);
+  const handleLogout = async() => {
+     dispatch(logout())
+     dispatch({ type: PURGE, key: ["user"] });
+    // navigate('/home')
+    navigate('/home', { replace: true })
+  }
+  useEffect(() => {
+    if (items) {
+      const updatedItems = [...items];
+      if (authState.user?.role === "admin") {
+        updatedItems[4] = {
+          label: <Link to={`/admin/dashboard`} >Vào trang admin</Link>,
+          key: 4
+        }
+        setItems(updatedItems)
+      }
+    }
+  }, [authState])
+  useEffect(() => {
+    
+      if (authState.user && fetchCartSuccess) {
+        dispatch(loadCart(cartData))
+    }
+  }, [authState, fetchCartSuccess])
 
 
 
@@ -82,20 +130,31 @@ const LayoutClient = () => {
               <ul className="flex flex-col mt-4 font-medium md:flex-row md:space-x-8 md:mt-0">
                 <li>
                   <div className="flex mb-3  wrapper-user-cart-wishlist sm:hidden justify-evenly">
-                    <a href="#"><svg className="mx-1 w-8 " onClick={() => setModal2Open(true)} viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {authState.isLoggedIn ? <Dropdown placement="bottom" arrow={{ pointAtCenter: true }} menu={{ items }}>
+                      <a onClick={(e) => e.preventDefault()}>
+                        <svg className="mx-1 w-8 " viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+                          <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="0.24000000000000005" />
+                          <g id="SVGRepo_iconCarrier">
+                            <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" strokeWidth="0.552" strokeLinecap="round" strokeLinejoin="round" />
+                          </g>
+                        </svg>
+                      </a>
+                    </Dropdown> : <a className="p-0" onClick={() => setModal2Open(true)}><svg className="mx-3 w-9 " viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g id="SVGRepo_bgCarrier" strokeWidth={0} />
                       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="0.24000000000000005" />
                       <g id="SVGRepo_iconCarrier">
                         <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" strokeWidth="0.552" strokeLinecap="round" strokeLinejoin="round" />
                       </g>
-                    </svg></a>
-                    <a href="#"><svg className="mx-1 w-8 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    </svg>
+                    </a>}
+                    <Link to={"/user/cart"}><svg className="mx-1 w-8 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g id="SVGRepo_bgCarrier" strokeWidth={0} />
                       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
                       <g id="SVGRepo_iconCarrier">
                         <path d="M16 8H17.1597C18.1999 8 19.0664 8.79732 19.1528 9.83391L19.8195 17.8339C19.9167 18.9999 18.9965 20 17.8264 20H6.1736C5.00352 20 4.08334 18.9999 4.18051 17.8339L4.84718 9.83391C4.93356 8.79732 5.80009 8 6.84027 8H8M16 8H8M16 8L16 7C16 5.93913 15.5786 4.92172 14.8284 4.17157C14.0783 3.42143 13.0609 3 12 3C10.9391 3 9.92172 3.42143 9.17157 4.17157C8.42143 4.92172 8 5.93913 8 7L8 8M16 8L16 12M8 8L8 12" stroke="#000000" strokeWidth="0.4800000000000001" strokeLinecap="round" strokeLinejoin="round" />
                       </g>
-                    </svg></a>
+                    </svg></Link>
                     <a href="#"><svg className="mx-1 w-8 " viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" strokeWidth="1.6640000000000001" stroke="#000000" fill="none">
                       <g id="SVGRepo_bgCarrier" strokeWidth={0} />
                       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
@@ -221,7 +280,7 @@ const LayoutClient = () => {
           </div>
         </nav>
         <div className="flex items-center justify-center w-4/5 mx-auto wrapper-logo-bar flex-col sm:flex-row">
-          <a href="#" className="hidden logo sm:block "><img src="https://res.cloudinary.com/dqzopvk2t/image/upload/v1697453349/z3s7ujxvlpkssanl9o6t.png" alt="true" width="240px" /></a>
+          <Link to={'/home'} className="hidden logo sm:block "><img src="https://res.cloudinary.com/dqzopvk2t/image/upload/v1697453349/z3s7ujxvlpkssanl9o6t.png" alt="true" width="240px" /></Link>
           <div className="hidden sm:flex justify-between sm:text-gray-600 border border-solid rounded-full border-lime-950 sm:hidden w-fit mb-4">
             <input type="search" name="serch" placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
             <button type="submit" className="mr-5">
@@ -245,22 +304,32 @@ const LayoutClient = () => {
             </button>
           </div>
           <div className="hidden sm:flex sm:mb-3 wrapper-user-cart-wishlist">
-            <a className="p-0" onClick={() => setModal2Open(true)}><svg className="mx-3 w-9 " viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {authState.isLoggedIn ? <Dropdown placement="bottom" arrow={{ pointAtCenter: true }} menu={{ items }}>
+              <a onClick={(e) => e.preventDefault()}>
+                <svg className="mx-1 w-8 " viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="0.24000000000000005" />
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" strokeWidth="0.552" strokeLinecap="round" strokeLinejoin="round" />
+                  </g>
+                </svg>
+              </a>
+            </Dropdown> : <a className="p-0" onClick={() => setModal2Open(true)}><svg className="mx-3 w-9 " viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth={0} />
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="0.24000000000000005" />
               <g id="SVGRepo_iconCarrier">
                 <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" strokeWidth="0.552" strokeLinecap="round" strokeLinejoin="round" />
               </g>
             </svg>
-            </a>
-            <a className="p-0" href="#"><svg className="mx-3 w-9 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            </a>}
+            <Link to={"/user/cart"} className="p-0" ><svg className="mx-3 w-9 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth={0} />
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
               <g id="SVGRepo_iconCarrier">
                 <path d="M16 8H17.1597C18.1999 8 19.0664 8.79732 19.1528 9.83391L19.8195 17.8339C19.9167 18.9999 18.9965 20 17.8264 20H6.1736C5.00352 20 4.08334 18.9999 4.18051 17.8339L4.84718 9.83391C4.93356 8.79732 5.80009 8 6.84027 8H8M16 8H8M16 8L16 7C16 5.93913 15.5786 4.92172 14.8284 4.17157C14.0783 3.42143 13.0609 3 12 3C10.9391 3 9.92172 3.42143 9.17157 4.17157C8.42143 4.92172 8 5.93913 8 7L8 8M16 8L16 12M8 8L8 12" stroke="#000000" strokeWidth="0.4800000000000001" strokeLinecap="round" strokeLinejoin="round" />
               </g>
             </svg>
-            </a>
+            </Link>
             <a className="p-0" href="#"><svg className="mx-3 w-9 " viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" strokeWidth="1.6640000000000001" stroke="#000000" fill="none">
               <g id="SVGRepo_bgCarrier" strokeWidth={0} />
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
@@ -275,8 +344,8 @@ const LayoutClient = () => {
         <nav className="w-4/5 py-4 mx-auto">
           <div className="nav-header">
             <ul className="hidden justify-between  lg:w-4/5 xl:text-sm  font-medium sm:flex sm:text-xs">
-              <li className="px-1 lg:px-4 py-2 lg:border-r lg:border-x-neutral-600"><a className="uppercase" href="#">Trang
-                chủ</a></li>
+              <li className="px-1 lg:px-4 py-2 lg:border-r lg:border-x-neutral-600"><Link to={'/home'} className="uppercase" >Trang
+                chủ</Link></li>
               <li className="px-1 lg:px-4 py-2 lg:border-x lg:border-x-neutral-600"><a className="uppercase" href="#">Mới ra
                 mắt</a></li>
               <li className="px-1 lg:px-4 py-2 lg:border-x lg:border-x-neutral-600"><span id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover" className="uppercase">Sách <svg className="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
@@ -321,12 +390,8 @@ const LayoutClient = () => {
         okButtonProps={{ style: { display: 'none' } }}
         open={modal2Open}
         onCancel={() => setModal2Open(false)}
-
-
       >
-
-
-        <Tabs centered destroyInactiveTabPane={true} defaultActiveKey="1" items={items} onChange={onChange} />
+        <Tabs centered destroyInactiveTabPane={true} defaultActiveKey="1" items={tabItems} onChange={onChange} />
 
       </Modal>
       <Outlet />
@@ -334,9 +399,9 @@ const LayoutClient = () => {
         <div className="w-full max-w-screen-xl p-4 py-6 mx-auto lg:py-8">
           <div className="md:flex md:justify-between lg:justify-evenly">
             <div className="mb-6 md:mb-0">
-              <a href="https://flowbite.com/" className="flex items-center">
+              <Link to={'/home'} className="flex items-center">
                 <img src="https://res.cloudinary.com/dqzopvk2t/image/upload/v1697453349/z3s7ujxvlpkssanl9o6t.png" className="h-20 mr-3" alt="FlowBite Logo" />
-              </a>
+              </Link>
             </div>
             <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
               <div>

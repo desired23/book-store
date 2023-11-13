@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input } from 'antd'
+import { Button, Checkbox, Form, Input, message } from 'antd'
 import React from 'react'
 import { LockOutlined, MailFilled } from '@ant-design/icons';
 import { useLoginMutation } from '../api/auth';
@@ -6,28 +6,33 @@ import { ILoginRequest } from '../interfaces/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { loginSuccess } from '../store/auth/authSlice';
-
-const Login = () => {
+import { useNavigate } from 'react-router-dom';
+interface IProps {
+  setModalState: (isOpen: boolean) => void;
+}
+const Login = (props: IProps) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch()
-  const authState = useSelector((state: RootState) => state.user);
   const [signIn] = useLoginMutation()
-
   const onFinish = async (values: ILoginRequest) => {
     try {
       signIn(values).unwrap().then((user) => dispatch(loginSuccess(user)))
+        .then(() => {
+          props.setModalState(false)
+          messageApi.success('Đăng nhập thành công')
+        })
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(authState);
   return (
     <Form
-
       name="normal_login"
       className="login-form"
       initialValues={{ remember: true }}
       onFinish={onFinish}
     >
+      {contextHolder}
       <Form.Item
         name="email"
 

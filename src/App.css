@@ -16,3 +16,6 @@
     flex-wrap: nowrap;
     align-items: stretch;
   } */
+  .ant-dropdown-trigger{
+    padding-top: 0;
+  }

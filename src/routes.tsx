@@ -14,6 +14,9 @@ import VoucherList from "./pages/admin/voucher/VoucherList";
 import VoucherEdit from "./pages/admin/voucher/VoucherEdit";
 import ClientProductList from './pages/client/ProductList';
 import ProductDetail from "./pages/client/ProductDetail";
+import Cart from "./pages/client/Cart";
+import Checkout from './pages/client/Checkout';
+import OrderDetail from "./pages/client/OrderDetail";
 
 
 export const router = createBrowserRouter([
@@ -22,6 +25,12 @@ export const router = createBrowserRouter([
         {path:"home", element: <HomePage/>},
         {path:"products", element: <ClientProductList/>},
         {path:"products/:id", element: <ProductDetail/>},
+        {path:"user/cart/", element: <Cart/>},
+        {path:"order/checkout/", element: <Checkout/>},
+        {path:"order/:id", element: <OrderDetail/>},
+
+
+
 
         
     ] },

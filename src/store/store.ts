@@ -24,13 +24,16 @@ import authSlice from "./auth/authSlice";
 import voucherApi, { voucherReducer } from "../api/voucher";
 import { booksSliceReducer } from "./book/productSlice";
 import { categorySliceReducer } from "./category/categorySlice";
+import cartApi, { cartReducer } from "../api/cart";
+import orderApi, { orderReducer } from "../api/order";
+import cartSlice from "./cart/cartSlice";
 // import { productReducer } from '../slices/Product';
 // import { cartReducer } from '@/slices/Cart';
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["cart", "user"],
+  whitelist: [ "user", "carts"],
 };
 const rootReducer = combineReducers({
   [productApi.reducerPath]: productReducer,
@@ -38,6 +41,9 @@ const rootReducer = combineReducers({
   [authorApi.reducerPath]: authorReducer,
   [authApi.reducerPath]: authReducer,
   [voucherApi.reducerPath]: voucherReducer,
+  [cartApi.reducerPath]: cartReducer,
+  [orderApi.reducerPath]: orderReducer,
+  carts: cartSlice,
   searchFilter: filterReducer,
   user: authSlice.reducer,
   products: booksSliceReducer,
@@ -60,6 +66,9 @@ export const store = configureStore({
       authorApi.middleware,
       authApi.middleware,
       voucherApi.middleware,
+      orderApi.middleware,
+      cartApi.middleware,
+
     ]),
 });
 export type AppDispatch = typeof store.dispatch;

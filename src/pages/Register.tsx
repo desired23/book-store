@@ -1,15 +1,30 @@
 import React from 'react'
-import { Form, Button, Input } from 'antd';
+import { Form, Button, Input, message } from 'antd';
 import { UserOutlined, MailFilled, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useRegisterMutation } from '../api/auth';
 import { IRegisterRequest } from '../interfaces/auth';
-
-const Register = () => {
+import { loginSuccess } from '../store/auth/authSlice';
+import { useDispatch } from 'react-redux';
+interface IProps{
+  setModalState: (isOpen: boolean) => void;
+}
+const Register = (props:IProps) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [signUp] = useRegisterMutation()
-  const onFinish = (values: IRegisterRequest) => {
-    console.log('Success:', values);
-    signUp(values)
+  const dispatch = useDispatch()
+  const onFinish = async (values: IRegisterRequest) => {
+    try {
+      console.log('Success:', values);
+      await signUp(values).unwrap().then((user) => dispatch(loginSuccess(user)))
+      props.setModalState(false)
+      messageApi.success('Đăng nhập thành công')
+    } catch (error) {
+      console.error('Registration failed:', error);
+      messageApi.error('Đăng ký thất bại!');
+
+    }
   };
+  
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -32,6 +47,7 @@ const Register = () => {
       },
     },
   };
+
   return (
     <Form
       {...formItemLayout}
@@ -41,7 +57,7 @@ const Register = () => {
       style={{ maxWidth: 600 }}
       scrollToFirstError
     >
-
+{contextHolder}
       <Form.Item
         name="email"
 

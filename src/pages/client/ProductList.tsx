@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useGetCategoriesQuery } from '../../api/category';
 import { loadCategories } from '../../store/category/categorySlice';
 import numeral from 'numeral';
+import { useGetAuthorsQuery } from '../../api/author';
 const ProductList = () => {
   const dispatch = useDispatch()
   const { data: bookData } = useGetProductsQuery()

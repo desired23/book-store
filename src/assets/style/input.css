@@ -160,7 +160,7 @@ button {
 
 #dropdownHover {
   position: absolute;
-  z-index: 100; /* Đặt Z-index lớn hơn các phần tử khác trên trang */
+  z-index: 3; /* Đặt Z-index lớn hơn các phần tử khác trên trang */
 }
 
 .filter-sidebar{
