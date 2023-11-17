@@ -8,7 +8,7 @@ import Slider, { CustomArrowProps } from 'react-slick';
 import { Button, Image, InputNumber, Rate, message } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { Form } from 'antd';
-import { useAddToCartMutation } from '../../api/cart';
+import { useAddToCartMutation, useGetCartQuery } from '../../api/cart';
 import { addToCartLocal } from '../../store/cart/cartSlice';
 
 const ProductDetail = () => {
@@ -75,6 +75,7 @@ const ProductDetail = () => {
   };
   const dispatch = useDispatch()
   const books = useSelector((state: RootState) => state.products.books);
+  const { refetch: refetchCart } = useGetCartQuery();
   const { id } = useParams()
   const { data: book } = useGetProductByIdQuery(id!)
   const [addToCart] = useAddToCartMutation()
@@ -89,6 +90,7 @@ const ProductDetail = () => {
         quantity: values.quantity,
         price: book?.discount
       })
+      refetchCart()
       message.success('addToCart Success')
     } else if (book) {
 

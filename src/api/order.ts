@@ -16,8 +16,12 @@ const orderApi = createApi({
   }),
   tagTypes: ['Order'],
   endpoints: (builder) => ({
-    getAllOrders: builder.query<IOrderResponse, void>({
+    getAllOrders: builder.query<IOrderResponse[], void>({
       query: () => 'order', // Update with your actual endpoint
+      providesTags:['Order'],
+    }),
+    getUserOrders: builder.query<IOrderResponse[], void>({
+      query: () => 'order/list', // Update with your actual endpoint
       providesTags:['Order'],
     }),
     getOrderById: builder.query<IOrderResponse, string>({
@@ -39,6 +43,21 @@ const orderApi = createApi({
       }),
       invalidatesTags: ['Order'],
     }),
+    deleteOrder: builder.mutation<IOrderResponse,  string>({
+      query: ( id ) => ({
+        url: `order/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Order'],
+    }),
+    changeStatus: builder.mutation<IOrderResponse,  {id: string, newStatus: {newStatus: number}}>({
+      query: ( { id, newStatus } ) => ({
+        url: `order/${id}/changeOrderStatus`,
+        method: 'PATCH',
+        body: newStatus
+      }),
+      invalidatesTags: ['Order'],
+    }),
   }),
 });
 
@@ -47,6 +66,9 @@ export const {
   useGetOrderByIdQuery,
   useCreateOrderMutation,
   useUpdateOrderMutation,
+  useGetUserOrdersQuery,
+  useDeleteOrderMutation,
+  useChangeStatusMutation
 } = orderApi;
 
 export const orderReducer = orderApi.reducer;

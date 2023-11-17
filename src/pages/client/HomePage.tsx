@@ -98,16 +98,16 @@ const HomePage = () => {
             {/* Carousel wrapper */}
             <div className="relative overflow-hidden rounded-lg h-80 ">
               {/* Item 1 */}
-              <div className="hidden duration-700 ease-in-out fit-slider-img" data-carousel-item="active">
-                <a href="#"><img src="https://images-production.bookshop.org/spree/promo_banner_slides/desktop_images/290/original/Absolution_-_Hero_Banner_-_2048x600_v3_%281%29.jpg?1698764432" className="absolute block w-full h-full max-w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." /></a>
+              <div className=" duration-700 ease-in-out fit-slider-img" data-carousel-item="active">
+                <Link to={"#"}><img  loading="lazy"  src="https://res.cloudinary.com/dqzopvk2t/image/upload/v1700143572/8644645_mcn9qj.jpg" className="absolute block w-full h-full max-w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." /></Link>
               </div>
               {/* Item 2 */}
-              <div className="hidden duration-700 ease-in-out fit-slider-img" data-carousel-item>
-                <a href="#"><img src="https://images-production.bookshop.org/spree/promo_banner_slides/desktop_images/289/original/MADDOW_Prequel_HC_bookshop_hero_desk_2048x600.jpg?1698764399" className="absolute block w-full h-full max-w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." /></a>
+              <div className=" duration-700 ease-in-out fit-slider-img" data-carousel-item>
+                <Link to={"#"}><img  loading="lazy"  src="https://res.cloudinary.com/dqzopvk2t/image/upload/v1700143626/32616182_7945313_sexxxf.jpg" className="absolute block w-full h-full max-w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." /></Link>
               </div>
               {/* Item 3 */}
-              <div className="hidden duration-700 ease-in-out fit-slider-img" data-carousel-item>
-                <a href="#"><img src="https://dispatch.barnesandnoble.com/content/dam/ccr/homepage/daily/2023/09/21/27547_Quote_A1_Booker-Prize-Shortlist_09-21.jpg" className="absolute block w-full h-full max-w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." /></a>
+              <div className=" duration-700 ease-in-out fit-slider-img" data-carousel-item>
+                <Link to={"#"}><img  loading="lazy"  src="https://dispatch.barnesandnoble.com/content/dam/ccr/homepage/daily/2023/09/21/27547_Quote_A1_Booker-Prize-Shortlist_09-21.jpg" className="absolute block w-full h-full max-w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." /></Link>
               </div>
             </div>
             {/* Slider indicators */}
@@ -150,9 +150,9 @@ const HomePage = () => {
               <Slider {...settings} className="image-slider">
                 {discountedBooks?.map((item: IBook) => {
                   return (
-                    <div className="flex flex-col text-center border shadow-lg row justify-between">
+                    <div  key={item._id} className="flex flex-col text-center border shadow-lg row justify-between">
                       <div className=" inline-block overflow-hidden wrap-book-addcart">
-                        <a className="book-img mw-100" href="#"><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></a>
+                        <Link to={`/products/${item._id}`} className="book-img mw-100" ><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></Link>
                         {/* <div className="absolute bottom-0 left-0 right-0 w-full pt-2 quick-add mw-100"><a className="px-2 py-2 text-xs border rounded-lg btn-add border-lime-950" href="#">Thêm
                           nhanh</a></div> */}
                       </div>
@@ -160,7 +160,7 @@ const HomePage = () => {
                         <h2 className="truncate px-8 text-sm font-medium overflow-hidden">{item.title}</h2>
                       </Link>
                       <a href="#">
-                        <p className="text-xs text-stone-400 ">{item.authorId.map(item => (<a href='#'>{item.name}</a>))}</p>
+                        <p className="text-xs text-stone-400 ">{item.authorId.map(author => (<a key={author._id + item._id} href='#'>{author.name}</a>))}</p>
                       </a>
                       <div className="flex w-full my-2 rev-sold">
                         {
@@ -197,9 +197,9 @@ const HomePage = () => {
               <Slider {...settings} className="image-slider">
                 {topSellingBooks?.map((item: IBook) => {
                   return (
-                    <div className="flex flex-col text-center border shadow-lg row justify-between">
+                    <div key={item._id} className="flex flex-col text-center border shadow-lg row justify-between">
                       <div className=" inline-block overflow-hidden wrap-book-addcart">
-                        <a className="book-img mw-100" href="#"><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></a>
+                        <Link to={`/products/${item._id}`} className="book-img mw-100"><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></Link>
                         {/* <div className="absolute bottom-0 left-0 right-0 w-full pt-2 quick-add mw-100"><a className="px-2 py-2 text-xs border rounded-lg btn-add border-lime-950" href="#">Thêm
                           nhanh</a></div> */}
                       </div>
@@ -207,7 +207,7 @@ const HomePage = () => {
                         <h2 className="truncate px-8 text-sm font-medium overflow-hidden">{item.title}</h2>
                       </Link>
                       <a href="#">
-                        <p className="text-xs text-stone-400 ">{item.authorId.map(item => (<a href='#'>{item.name}</a>))}</p>
+                        <p className="text-xs text-stone-400 ">{item.authorId.map(author => (<a key={author._id + item._id} href='#'>{author.name}</a>))}</p>
                       </a>
                       <div className="flex w-full my-2 rev-sold">
                                                 {
@@ -261,9 +261,9 @@ const HomePage = () => {
               <Slider {...settings} className="image-slider">
                 {highlyRatedBooks?.map((item: IBook) => {
                   return (
-                    <div className="flex flex-col text-center border shadow-lg row justify-between">
+                    <div key={item._id} className="flex flex-col text-center border shadow-lg row justify-between">
                       <div className=" inline-block overflow-hidden wrap-book-addcart">
-                        <a className="book-img mw-100" href="#"><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></a>
+                        <Link to={`/products/${item._id}`} className="book-img mw-100" ><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></Link>
                         {/* <div className="absolute bottom-0 left-0 right-0 w-full pt-2 quick-add mw-100"><a className="px-2 py-2 text-xs border rounded-lg btn-add border-lime-950" href="#">Thêm
                           nhanh</a></div> */}
                       </div>
@@ -271,7 +271,7 @@ const HomePage = () => {
                         <h2 className="truncate px-8 text-sm font-medium overflow-hidden">{item.title}</h2>
                       </Link>
                       <a href="#">
-                        <p className="text-xs text-stone-400 ">{item.authorId.map(item => (<a href='#'>{item.name}</a>))}</p>
+                        <p className="text-xs text-stone-400 ">{item.authorId.map(author => (<a key={author._id + item._id} href='#'>{author.name}</a>))}</p>
                       </a>
                       <div className="flex w-full my-2 rev-sold">
                                                 {

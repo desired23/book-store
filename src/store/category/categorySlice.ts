@@ -3,10 +3,12 @@ import { ICategory } from "../../interfaces/category"; // Make sure to import th
 
 interface ICategoryState {
   categories: ICategory[];
+  selectedCategory: ICategory | null;
 }
 
 const initialCategoryState: ICategoryState = {
   categories: [],
+  selectedCategory: null,
 };
 
 const categorySlice = createSlice({
@@ -31,6 +33,9 @@ const categorySlice = createSlice({
       const categoryIdToRemove = action.payload;
       state.categories = state.categories.filter((category) => category._id !== categoryIdToRemove);
     },
+    selectCategory: (state, action: PayloadAction<ICategory | null>) => {
+      state.selectedCategory = action.payload;
+    },
   },
 });
 
@@ -39,6 +44,7 @@ export const {
   addCategory,
   removeCategory,
   updateCategory,
+  selectCategory
 } = categorySlice.actions;
 
 export const categorySliceReducer = categorySlice.reducer;

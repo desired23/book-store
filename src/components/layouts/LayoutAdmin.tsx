@@ -33,6 +33,11 @@ const items: MenuProps['items'] = [
     icon: <UploadOutlined />,
     label: <Link to={'/admin/vouchers'}>Khuyến mại</Link>,
   },
+  {
+    key: '6',
+    icon: <UploadOutlined />,
+    label: <Link to={'/admin/orders'}>Đơn hàng</Link>,
+  },
   
 ]
 

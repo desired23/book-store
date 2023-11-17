@@ -1,4 +1,4 @@
-import { Button, Dropdown, MenuProps, Modal, Tabs, TabsProps } from 'antd'
+import { Badge, Button, Dropdown, MenuProps, Modal, Select, Tabs, TabsProps } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import Login from '../../pages/Login';
@@ -9,17 +9,36 @@ import { logout } from '../../store/auth/authSlice';
 import { PURGE } from 'redux-persist';
 import { useGetCartQuery } from '../../api/cart';
 import { ICartState, loadCart } from '../../store/cart/cartSlice';
+import { setSearchTerm, setSearchType } from '../../store/search/searchSlice';
+import { selectCategory } from '../../store/category/categorySlice';
 
 const LayoutClient = () => {
   const [modal2Open, setModal2Open] = useState(false);
   const authState = useSelector((state: RootState) => state.user);
+  const getCart: ICartState = useSelector((state: RootState) => state.carts)
+  const searchTerm = useSelector((state:RootState)=>state.search.searchTerm)
+  const searchType = useSelector((state:RootState)=>state.search.searchType)
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { data: cartData, isSuccess: fetchCartSuccess } = useGetCartQuery()
   const onChange = (key: string) => {
     console.log(key);
   };
+  const optionsSearch = [{
+    value: 'bookTitle',
+    label: 'Tên sách',
+  },
+  {
+    value: 'authorName',
+    label: 'Tác giả',
+  },
+  {
+    value: 'categoryName',
+    label: 'Danh mục',
+  },
 
+]
   const tabItems: TabsProps['items'] = [
     {
       key: '1',
@@ -39,7 +58,7 @@ const LayoutClient = () => {
       key: '1',
     },
     {
-      label: 'Đơn hàng',
+      label: <Link to={`/account/orders`}>Đơn hàng</Link>,
       key: '2',
     },
     {
@@ -72,7 +91,9 @@ const LayoutClient = () => {
     }
   }, [authState, fetchCartSuccess])
 
-
+const handleSearch = ()=>{
+  navigate(`/products?searchType=${searchType}&search=${searchTerm}`);
+}
 
   return (
     <>
@@ -148,13 +169,17 @@ const LayoutClient = () => {
                       </g>
                     </svg>
                     </a>}
-                    <Link to={"/user/cart"}><svg className="mx-1 w-8 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <Link to={"/user/cart"}>
+                    <Badge count={getCart.items.length} showZero>
+                      <svg className="mx-1 w-8 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g id="SVGRepo_bgCarrier" strokeWidth={0} />
                       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
                       <g id="SVGRepo_iconCarrier">
                         <path d="M16 8H17.1597C18.1999 8 19.0664 8.79732 19.1528 9.83391L19.8195 17.8339C19.9167 18.9999 18.9965 20 17.8264 20H6.1736C5.00352 20 4.08334 18.9999 4.18051 17.8339L4.84718 9.83391C4.93356 8.79732 5.80009 8 6.84027 8H8M16 8H8M16 8L16 7C16 5.93913 15.5786 4.92172 14.8284 4.17157C14.0783 3.42143 13.0609 3 12 3C10.9391 3 9.92172 3.42143 9.17157 4.17157C8.42143 4.92172 8 5.93913 8 7L8 8M16 8L16 12M8 8L8 12" stroke="#000000" strokeWidth="0.4800000000000001" strokeLinecap="round" strokeLinejoin="round" />
                       </g>
-                    </svg></Link>
+                    </svg>
+                    </Badge>
+                    </Link>
                     <a href="#"><svg className="mx-1 w-8 " viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" strokeWidth="1.6640000000000001" stroke="#000000" fill="none">
                       <g id="SVGRepo_bgCarrier" strokeWidth={0} />
                       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
@@ -185,7 +210,11 @@ const LayoutClient = () => {
                 </li>
                 <li>
                   <div className="w-full flex justify-between sm:text-gray-600 border border-solid rounded-full border-lime-950 sm:hidden mb-4">
-                    <input type="search" name="serch" placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
+                    <Select defaultValue={'Tìm kiếm theo'} onChange={(e) => dispatch(setSearchType(e))} placeholder='Tìm theo' options={optionsSearch} />
+                    <input type="search" name="serch" onChange={(e)=>{
+                      dispatch(setSearchTerm(e.target.value))
+                      dispatch(selectCategory(null))
+                    }} placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
                     <button type="submit" className="mr-5">
                       <svg className="w-4 h-4 fill-lime-950" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56.966 56.966" enableBackground={'new 0 0 56.966 56.966'} xmlSpace="preserve" width="512px" height="512px">
                         <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
@@ -282,8 +311,12 @@ const LayoutClient = () => {
         <div className="flex items-center justify-center w-4/5 mx-auto wrapper-logo-bar flex-col sm:flex-row">
           <Link to={'/home'} className="hidden logo sm:block "><img src="https://res.cloudinary.com/dqzopvk2t/image/upload/v1697453349/z3s7ujxvlpkssanl9o6t.png" alt="true" width="240px" /></Link>
           <div className="hidden sm:flex justify-between sm:text-gray-600 border border-solid rounded-full border-lime-950 sm:hidden w-fit mb-4">
-            <input type="search" name="serch" placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
-            <button type="submit" className="mr-5">
+            <Select defaultValue={'Tìm kiếm theo'} onChange={(e) => dispatch(setSearchType(e))} placeholder='Tìm theo' options={optionsSearch} />
+            <input type="search" name="serch" onChange={(e)=>{
+                      dispatch(setSearchTerm(e.target.value))
+                      dispatch(selectCategory(null))
+                    }} placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
+            <button type="submit" className="mr-5" onClick={()=>handleSearch()}>
               <svg className="w-4 h-4 fill-lime-950" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56.966 56.966" enableBackground={'new 0 0 56.966 56.966'} xmlSpace="preserve" width="512px" height="512px">
                 <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
               </svg>
@@ -295,14 +328,23 @@ const LayoutClient = () => {
         d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
     </svg></a>
     </div> */}
-          <div className="hidden sm:flex sm:justify-between sm:w-1/2 text-gray-600 border border-solid rounded-full border-lime-950">
-            <input type="search" name="serch" placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
-            <button type="submit" className="mr-5">
+            <div className="search-container sm:w-1/2">
+            <div className="hidden sm:flex sm:justify-between  text-gray-600 border border-solid rounded-full border-lime-950">
+            <Select defaultValue={'Tìm theo'} onChange={(e) => dispatch(setSearchType(e))} placeholder='Tìm theo' options={optionsSearch} />
+            <input type="search" name="serch" onChange={(e)=>{
+                      dispatch(setSearchTerm(e.target.value))
+                      dispatch(selectCategory(null))
+                    }} placeholder="Search" className="w-4/5 h-10 px-5 ml-4 text-sm bg-white border-white shadow-none search-home focus:outline-none focus:rounded-full focus-within:border-none" />
+            <button type="submit" className="mr-5" onClick={()=>handleSearch()}>
               <svg className="w-4 h-4 fill-lime-950" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56.966 56.966" enableBackground={'new 0 0 56.966 56.966'} xmlSpace="preserve" width="512px" height="512px">
                 <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
               </svg>
             </button>
           </div>
+          <div className='search-result w-full relative hidden'>
+            <div className='text-center h-32 absolute z-50 bg-white border left-0 right-0 rounded-md mt-2'>Loading ...</div>
+          </div>
+            </div>
           <div className="hidden sm:flex sm:mb-3 wrapper-user-cart-wishlist">
             {authState.isLoggedIn ? <Dropdown placement="bottom" arrow={{ pointAtCenter: true }} menu={{ items }}>
               <a onClick={(e) => e.preventDefault()}>
@@ -322,13 +364,16 @@ const LayoutClient = () => {
               </g>
             </svg>
             </a>}
-            <Link to={"/user/cart"} className="p-0" ><svg className="mx-3 w-9 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <Link to={"/user/cart"} className="p-0" >
+            <Badge  size="small" count={getCart.items.length} showZero>
+              <svg className="mx-1 w-9 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" strokeWidth={0} />
               <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
               <g id="SVGRepo_iconCarrier">
                 <path d="M16 8H17.1597C18.1999 8 19.0664 8.79732 19.1528 9.83391L19.8195 17.8339C19.9167 18.9999 18.9965 20 17.8264 20H6.1736C5.00352 20 4.08334 18.9999 4.18051 17.8339L4.84718 9.83391C4.93356 8.79732 5.80009 8 6.84027 8H8M16 8H8M16 8L16 7C16 5.93913 15.5786 4.92172 14.8284 4.17157C14.0783 3.42143 13.0609 3 12 3C10.9391 3 9.92172 3.42143 9.17157 4.17157C8.42143 4.92172 8 5.93913 8 7L8 8M16 8L16 12M8 8L8 12" stroke="#000000" strokeWidth="0.4800000000000001" strokeLinecap="round" strokeLinejoin="round" />
               </g>
             </svg>
+            </Badge>
             </Link>
             <a className="p-0" href="#"><svg className="mx-3 w-9 " viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" strokeWidth="1.6640000000000001" stroke="#000000" fill="none">
               <g id="SVGRepo_bgCarrier" strokeWidth={0} />
@@ -348,28 +393,8 @@ const LayoutClient = () => {
                 chủ</Link></li>
               <li className="px-1 lg:px-4 py-2 lg:border-x lg:border-x-neutral-600"><a className="uppercase" href="#">Mới ra
                 mắt</a></li>
-              <li className="px-1 lg:px-4 py-2 lg:border-x lg:border-x-neutral-600"><span id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover" className="uppercase">Sách <svg className="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m1 1 4 4 4-4" />
-              </svg>
-              </span>
-                {/* Dropdown menu */}
-                <div id="dropdownHover" className=" hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
-                    <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
-                    </li>
-                    <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-                    </li>
-                    <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-                    </li>
-                    <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign
-                        out</a>
-                    </li>
-                  </ul>
-                </div>
+              <li className="px-1 lg:px-4 py-2 lg:border-x lg:border-x-neutral-600">
+              <Link to={'/products'} className="uppercase" >Sản phẩm</Link>
               </li>
               <li className="px-1 lg:px-4 py-2 lg:border-x lg:border-x-neutral-600"><a className="uppercase" href="#">Bán
                 chạy</a></li>

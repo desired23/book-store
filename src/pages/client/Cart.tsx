@@ -14,6 +14,9 @@ const Cart = () => {
 
   useEffect(() => {
     if (fetchCartSuccess && authState.isLoggedIn) {
+      if (cartData.items.length === 0) {
+        dispatch(loadCart([]))
+      }
       dispatch(loadCart(cartData))
     }
   }, [fetchCartSuccess])
@@ -31,12 +34,12 @@ const Cart = () => {
   }
   const handleChangeQuantity = async (productId: string, newQuantity: number) => {
     if (authState.isLoggedIn) {
-      dispatch(updateCartItemQuantity({ productId, quantity: newQuantity }));
-      // Gọi mutation updateCart ở đây nếu cần
+     await dispatch(updateCartItemQuantity({ productId, quantity: newQuantity }));
+      
       await updateCart({
         items: getCart.items.map(item => ({
           book: item.book?._id,
-          quantity: item?.quantity,
+          quantity: item.book?._id === productId ? newQuantity : item.quantity,
           price: item.book?.discount
         }))
       })
@@ -49,7 +52,7 @@ const Cart = () => {
         <div className="w-3/4 bg-white px-10 py-5">
           <div className="flex justify-between border-b pb-8">
             <h1 className=" text-2xl">Giỏ hàng</h1>
-            <h2 className=" text-2xl">3 sản phẩm</h2>
+            <h2 className=" text-2xl">{getCart.items.length} sản phẩm</h2>
           </div>
           <div className="flex mt-10 mb-5">
             <h3 className=" text-gray-600 text-xs uppercase w-2/5">Chi tiết sản phẩm</h3>
@@ -77,7 +80,7 @@ const Cart = () => {
                     if (Number.isInteger(newQuantity)) {
                       await handleChangeQuantity(itemCart.book?._id?itemCart.book?._id:'', newQuantity!);
                     }
-                  }} min={1} max={itemCart?.book?.stock} className="mx-2 border text-center w-16" type="text" defaultValue={itemCart.quantity} />
+                  }} min={1} max={itemCart?.book?.stock} className="mx-2 border text-center w-16" type="text"  defaultValue={itemCart.quantity} />
               </div>
               <span className="text-center w-1/5  text-sm">{itemCart?.book?.discount.toLocaleString("vi-VN")}₫</span>
               <span className="text-center w-1/5  text-sm">{(itemCart?.book?.discount * itemCart.quantity).toLocaleString("vi-VN")}₫</span>
@@ -114,7 +117,7 @@ const Cart = () => {
                 return acc + (item.book?.discount * item.quantity)
               }, 0).toLocaleString("vi-VN")}₫</span>
             </div>
-            <Link  to={`/order/checkout`} className="bg-indigo-500 btn  hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">Thanh toán</Link>
+            <Link to={`/order/checkout`} className="bg-indigo-500 btn  hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full">Thanh toán</Link>
           </div>
         </div>
       </div>

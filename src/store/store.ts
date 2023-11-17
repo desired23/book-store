@@ -27,6 +27,7 @@ import { categorySliceReducer } from "./category/categorySlice";
 import cartApi, { cartReducer } from "../api/cart";
 import orderApi, { orderReducer } from "../api/order";
 import cartSlice from "./cart/cartSlice";
+import searchSlice from "./search/searchSlice";
 // import { productReducer } from '../slices/Product';
 // import { cartReducer } from '@/slices/Cart';
 
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
   user: authSlice.reducer,
   products: booksSliceReducer,
   categories: categorySliceReducer,
+  search: searchSlice
 
   // cart: cartReducer
 });

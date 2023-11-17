@@ -5,10 +5,11 @@ import { RootState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCreateOrderMutation } from '../../api/order';
 import { useNavigate } from 'react-router-dom';
-import { useUpdateCartMutation } from '../../api/cart';
+import { useGetCartQuery, useUpdateCartMutation } from '../../api/cart';
 
 const Checkout = () => {
     const getCart: ICartState = useSelector((state: RootState) => state.carts)
+    const { refetch: refetchCart } = useGetCartQuery();
   const authState = useSelector((state: RootState) => state.user)
 
     const [addOrder] = useCreateOrderMutation()
@@ -25,11 +26,9 @@ const Checkout = () => {
             })),
             totalPrice: getCart.totalMoney
         }
-        addOrder(postData).unwrap().then(async(data) => {
+        addOrder(postData).unwrap().then((data) => {
             message.info('ok');
-             await updateCart({
-                items: []
-              })
+            refetchCart()
             console.log(data);
             navigate(`/order/${data._id}`)
         })

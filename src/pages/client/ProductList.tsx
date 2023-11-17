@@ -5,19 +5,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { loadBooks } from '../../store/book/productSlice';
 import { IBook } from '../../interfaces/book';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useGetCategoriesQuery } from '../../api/category';
-import { loadCategories } from '../../store/category/categorySlice';
+import { loadCategories, selectCategory } from '../../store/category/categorySlice';
 import numeral from 'numeral';
 import { useGetAuthorsQuery } from '../../api/author';
 const ProductList = () => {
   const dispatch = useDispatch()
+  const [searchParams] = useSearchParams()
   const { data: bookData } = useGetProductsQuery()
   const { data: categoryData } = useGetCategoriesQuery()
   const { data: authors } = useGetAuthorsQuery()
-
+  // const searchTerm = searchParams.get('search');
+  // const searchType = searchParams.get('searchType');
+  const searchTerm = useSelector((state: RootState) => state.search.searchTerm);
+  const searchType = useSelector((state: RootState) => state.search.searchType);
   const books = useSelector((state: RootState) => state.products.books);
   const favoriteCategories = useSelector((state: RootState) => state.categories.categories);
+  const selectedCategory = useSelector((state: RootState) => state.categories.selectedCategory);
+
   useEffect(() => {
     if (bookData && bookData.length > 0) {
       dispatch(loadBooks(bookData))
@@ -33,6 +39,32 @@ const ProductList = () => {
   }
   const onFinish = (values: any) => {
     console.log('Success:', values);
+  };
+  const filteredBooks = books.filter((book) => {
+    const titleMatches = book.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const authorMatches =
+      book.authorId.some((author) => author.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      book.authorId.map((author) => author.name.toLowerCase()).join(' ').includes(searchTerm.toLowerCase());
+
+    const categoryFilterMatches =
+      selectedCategory
+        ? book.categoryId.some((categoryId) => categoryId._id === selectedCategory._id)
+        : true;
+    const categoryMatches = book.categoryId.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (searchType === 'bookTitle') {
+      return titleMatches && categoryFilterMatches;
+    } else if (searchType === 'authorName') {
+      return authorMatches && categoryFilterMatches;
+    } else if (searchType === 'categoryName') {
+      return categoryFilterMatches && categoryMatches;
+    } else {
+      // Nếu searchType không được chỉ định hoặc không hợp lệ, xem xét cả tiêu đề, tác giả và danh mục
+      return (titleMatches || authorMatches) && categoryFilterMatches;
+    }
+  });
+  const handleCategoryClick = (category) => {
+    const newSelectedCategory = category._id ? category : null;
+    dispatch(selectCategory(newSelectedCategory));
   };
   return (
     <main className="w-4/5 mx-auto">
@@ -68,12 +100,11 @@ const ProductList = () => {
               <div>
                 <h3 className='uppercase text-xs text-lime-900 font-bold'>Danh mục phổ biến</h3>
                 <ul className='pl-2'>
+                  <a className={`uppercase text-xs text-lime-900 ${selectedCategory === null ? 'font-bold' : 'font-thin'}`} onClick={() => handleCategoryClick({ _id: '' })}>Tất cả</a>
                   {favoriteCategories?.map((item) => {
-                    console.log(favoriteCategories);
                     if (item.books?.some((item: IBook) => Number(item.soldCount) > 100)) {
-                      console.log("ok")
                       return <li key={item._id}>
-                        <Link className=' uppercase text-xs text-lime-900' to={`/products/category/${item._id}`}>{item.name}</Link>
+                        <a className={`uppercase text-xs text-lime-900 ${selectedCategory?._id === item._id ? 'font-bold' : 'font-thin'}`} onClick={() => handleCategoryClick({ _id: item._id })}>{item.name}</a>
                       </li>
                     }
                   })}
@@ -132,7 +163,7 @@ const ProductList = () => {
 
                   <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button className='mt-2 text-xs uppercase' ghost type="primary" htmlType="submit">
-                    Áp dụng
+                      Áp dụng
                     </Button>
                   </Form.Item>
                 </Form>
@@ -155,7 +186,7 @@ const ProductList = () => {
                 position: "both"
               }}
 
-              dataSource={books}
+              dataSource={filteredBooks}
               renderItem={item => (
                 <List.Item key={item._id}>
                   <Card key={item._id} className="flex flex-col text-center border shadow-lg row">
@@ -168,14 +199,22 @@ const ProductList = () => {
                       <h2 className="truncate px-8 text-sm font-medium overflow-hidden">{item.title}</h2>
                     </a>
                     <a href="#">
-                      <p className="text-sm text-stone-400 ">{item.authorId.map(item => (<a key={item._id} href='#'>{item.name}</a>))}</p>
+                      <p className="text-sm text-stone-400 ">{item.authorId.map(author => (<a key={author._id + item._id} href='#'>{author.name}</a>))}</p>
                     </a>
-                    <div className="flex w-full my-2 rev-sold">
-                      {
-                        item?.averageRating != null ? <Rate className='text-sm' disabled defaultValue={Number(item?.averageRating)} /> : <span className="text-gray-600 ml-3 text-sm hidden"></span>
-                      }
-                      <p className="text-xs">Đã Bán {item.soldCount}</p>
-                    </div>
+                    {
+
+                      item?.averageRating != null ?
+                        <div className="flex w-full my-2 rev-sold justify-evenly">
+                          <Rate className='text-sm' disabled defaultValue={Number(item?.averageRating)} />
+                          <p className="text-xs">Đã Bán {item.soldCount}</p>
+                        </div> :
+                        <div className="flex w-full my-2 rev-sold justify-center">
+                          <span className="text-gray-600 ml-3 text-sm hidden"></span>
+                          <p className="text-xs">Đã Bán {item.soldCount}</p>
+                        </div>
+
+
+                    }
                     <div className="flex justify-center pb-4">
                       <p className="text-sm font-bold text-red-500 ">{item.discount.toLocaleString("vi-VN")}₫</p>
                       <p className="text-xs">- {handleDiscount(item)} %</p>

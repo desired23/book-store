@@ -19,3 +19,12 @@
   .ant-dropdown-trigger{
     padding-top: 0;
   }
+  .wrapper-logo-bar .ant-select-selector{
+border: none;
+height: 10px;
+border-radius: 9999px;
+  }
+  :where(.css-dev-only-do-not-override-pr0fja).ant-select-single{
+    height: 39px;
+
+  }
