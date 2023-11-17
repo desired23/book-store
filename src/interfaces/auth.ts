@@ -22,3 +22,10 @@
     password: string,
     confirmPassword: string,
   }
+  export interface IUser{
+    _id?: string,
+    username: string,
+    email: string,
+    voucherwallet: string[],
+    role: string
+  }

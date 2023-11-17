@@ -38,6 +38,11 @@ const items: MenuProps['items'] = [
     icon: <UploadOutlined />,
     label: <Link to={'/admin/orders'}>Đơn hàng</Link>,
   },
+  {
+    key: '6',
+    icon: <UploadOutlined />,
+    label: <Link to={'/admin/users'}>Người dùng</Link>,
+  },
   
 ]
 

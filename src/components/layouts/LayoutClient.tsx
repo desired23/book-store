@@ -54,7 +54,7 @@ const LayoutClient = () => {
   ];
   const [items, setItems] = useState<MenuProps['items']>([
     {
-      label: 'Thông tin tài khoản',
+      label: <Link to={`/account/`}>Thông tin tài khoản</Link>,
       key: '1',
     },
     {

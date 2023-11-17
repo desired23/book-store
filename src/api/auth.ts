@@ -4,15 +4,29 @@ import {
   // AuthResponse,
   ILoginRequest,
   IRegisterRequest,
+  IUser,
 } from "../interfaces/auth";
 import { AxiosResponse } from "axios";
+import { RootState } from "../store/store";
 
 const authApi = createApi({
   reducerPath: "auth",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8088/api/",
+    prepareHeaders(headers, {getState}) {
+      const token = (getState() as RootState).user.token
+      if (token) {
+          headers.set('Authorization', `Bearer ${token}`)
+        }
+        return headers
+  }, 
   }),
+  tagTypes: ['User'],
   endpoints: (builder) => ({
+    getUsers: builder.query<IUser[], void>({
+      query: () => `/auth/users`,
+      providesTags: ['User'],
+    }),
     login: builder.mutation<AuthResponse, ILoginRequest>({
       query: (data) => ({
         url: `auth/login`,
@@ -27,10 +41,17 @@ const authApi = createApi({
         body:data
       }),
     }),
+    deleteUser: builder.mutation<AxiosResponse, string>({
+      query: (data) => ({
+        url: `auth/users/${data}`,
+        method:'DELETE',
+      }),
+      invalidatesTags:['User']
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useDeleteUserMutation, useGetUsersQuery } = authApi;
 
 export const authReducer = authApi.reducer;
 export default authApi;

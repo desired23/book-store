@@ -18,7 +18,10 @@ import Cart from "./pages/client/Cart";
 import Checkout from './pages/client/Checkout';
 import OrderDetail from "./pages/client/OrderDetail";
 import OrderList from "./pages/client/OrderList";
+import Account from "./pages/client/Account";
+
 import OrderManagementPage from "./pages/admin/order/OrderList";
+import UserList from "./pages/admin/user/UserList";
 
 
 export const router = createBrowserRouter([
@@ -31,6 +34,8 @@ export const router = createBrowserRouter([
         {path:"order/checkout/", element: <Checkout/>},
         {path:"order/:id", element: <OrderDetail/>},
         {path:"account/orders", element: <OrderList/>},
+        {path:"account/", element: <Account/>},
+
     ] },
     { path: "/admin", element: <LayoutAdmin/>, children: [
         {index: true, element: <Navigate to={"dashboard"}/>},
@@ -45,6 +50,8 @@ export const router = createBrowserRouter([
         {path:"vouchers", element: <VoucherList/>},
         {path:"voucher/:id/edit/:type", element: <VoucherEdit/>},
         {path:"orders", element: <OrderManagementPage/>},
+        {path:"users", element: <UserList/>},
+
 
     ] },
 ])
