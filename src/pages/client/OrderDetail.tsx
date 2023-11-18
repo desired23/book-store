@@ -3,27 +3,27 @@ import React from 'react'
 import { ICartState, loadCart, removeProductFromCart, updateCartItemQuantity } from '../../store/cart/cartSlice';
 import { RootState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCreateOrderMutation, useGetOrderByIdQuery } from '../../api/order';
+import { useChangeStatusMutation, useCreateOrderMutation, useGetOrderByIdQuery } from '../../api/order';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import { UserOutlined } from '@ant-design/icons';
+import { IOrderResponse } from '../../interfaces/order';
 
 const OrderDetail = () => {
   const getCart: ICartState = useSelector((state: RootState) => state.carts)
+  const [changeStatus] = useChangeStatusMutation()
 
   const { id } = useParams()
   const { data: orderData } = useGetOrderByIdQuery(id!)
   console.log(orderData);
   const dispatch = useDispatch()
   const convertedDateTime = moment(orderData?.createdAt).utcOffset('+07:00');
-  function handleButtonClick(status) {
-    if (status === 0 || status === 1) {
-      // Xử lý khi nhấp vào "Hủy đơn hàng"
-      console.log("Đã hủy đơn hàng");
-    } else {
-      // Xử lý khi nhấp vào "Tiếp tục mua sắm"
-      console.log("Tiếp tục mua sắm");
-    }
+  function handleButtonClick(orderData: IOrderResponse) {
+      if(window.confirm('Bạn có chắc muốn hủy')){
+        if (orderData.status === 0 || orderData.status === 1) {
+          changeStatus({ id: String(orderData._id), newStatus: { newStatus: 2 } })
+        }
+      }
   }
   return (
     <main className="w-4/5 mx-auto bg-slate-50 rounded-lg  flex">
@@ -133,13 +133,13 @@ const OrderDetail = () => {
                   </div>
                   <div className="flex justify-center md:justify-start items-center md:items-start flex-col space-y-4">
                     <p className="text-base dark:text-white font-semibold leading-4 text-center md:text-left text-gray-800">Trạng thái đơn hàng</p>
-                    <p className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">{orderData?.status === 1 ? "Đơn hàng đang được chuẩn bị" : (orderData?.status === 0 ? "Chờ xác nhận" : (orderData?.status === 2 ? "Đơn hàng đã hủy" : "Đơn hàng thất lạc"))}</p>
+                    <p className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">{orderData?.status === 1 ? "Đơn hàng đang được chuẩn bị" : (orderData?.status === 0 ? "Chờ xác nhận" : (orderData?.status === 2 ? "Đơn hàng đã hủy" : (orderData?.status === 3) ? "Đang giao" : "Đơn hàng thất lạc"))}</p>
                   </div>
                 </div>
                 <div className="flex w-full justify-center items-center md:justify-start md:items-start">
                   <button
                     className="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base font-medium leading-4 text-gray-800"
-                  onClick={() => handleButtonClick(orderData?.status)}
+                    onClick={() => handleButtonClick(orderData)}
                   >
                     {orderData?.status === 0 || orderData?.status === 1 ? "Hủy đơn hàng" : "Tiếp tục mua sắm"}
                   </button>

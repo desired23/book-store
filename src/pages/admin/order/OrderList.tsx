@@ -181,7 +181,7 @@ const OrderManagementPage = () => {
                 const orderStatus = [
                     { status: 0, statusText: 'Chờ xác nhận' },
                     { status: 1, statusText: 'Đóng gói' },
-                    { status: 2, statusText: 'Lỗi giao hàng' },
+                    { status: 2, statusText: 'Đơn đã hủy' },
                     { status: 3, statusText: 'Đang giao' },
                     { status: 4, statusText: 'Hoàn thành' },
                 ];
@@ -195,7 +195,7 @@ const OrderManagementPage = () => {
                         statusColor = 'bg-gray-200 text-gray-500';
                         break;
                     case 2:
-                        statusText = 'Lỗi giao hàng';
+                        statusText = 'Đơn đã hủy';
                         statusColor = 'bg-yellow-400 text-white';
                         break;
                     case 3:

@@ -26,6 +26,7 @@ const orderApi = createApi({
     }),
     getOrderById: builder.query<IOrderResponse, string>({
       query: (id) => `order/${id}`,
+      providesTags:['Order'],
     }),
     createOrder: builder.mutation<IOrderResponse, IOrderRequestAdd>({
       query: (data) => ({

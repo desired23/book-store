@@ -191,13 +191,13 @@ const ProductList = () => {
                 <List.Item key={item._id}>
                   <Card key={item._id} className="flex flex-col text-center border shadow-lg row">
                     <div className="relative inline-block overflow-hidden wrap-book-addcart">
-                      <a className="block book-img mw-100" href="#"><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></a>
+                      <Link to={`/products/${item._id}`} className="block book-img mw-100"><img className="mx-auto mt-4 text-center book-img" src={item.images[0].url} alt="San pham" /></Link>
                       <div className="absolute bottom-0 left-0 right-0 w-full p-2 quick-add mw-100"><a className=" py-2 text-xs border rounded-lg btn-add border-lime-950" href="#">Thêm
                         nhanh</a></div>
                     </div>
-                    <a href="#">
+                    <Link to={`/products/${item._id}`}>
                       <h2 className="truncate px-8 text-sm font-medium overflow-hidden">{item.title}</h2>
-                    </a>
+                    </Link>
                     <a href="#">
                       <p className="text-sm text-stone-400 ">{item.authorId.map(author => (<a key={author._id + item._id} href='#'>{author.name}</a>))}</p>
                     </a>

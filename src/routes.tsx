@@ -19,6 +19,8 @@ import Checkout from './pages/client/Checkout';
 import OrderDetail from "./pages/client/OrderDetail";
 import OrderList from "./pages/client/OrderList";
 import Account from "./pages/client/Account";
+import ChangePassword from "./pages/client/ChangePassword";
+
 
 import OrderManagementPage from "./pages/admin/order/OrderList";
 import UserList from "./pages/admin/user/UserList";
@@ -35,6 +37,8 @@ export const router = createBrowserRouter([
         {path:"order/:id", element: <OrderDetail/>},
         {path:"account/orders", element: <OrderList/>},
         {path:"account/", element: <Account/>},
+        {path:"account/changePassword", element: <ChangePassword/>},
+
 
     ] },
     { path: "/admin", element: <LayoutAdmin/>, children: [

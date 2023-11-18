@@ -48,10 +48,18 @@ const authApi = createApi({
       }),
       invalidatesTags:['User']
     }),
+    changePassword: builder.mutation<AxiosResponse, {oldPassword:string, newPassword: string, confirmNewPassword: string}>({
+      query: (data) => ({
+        url: `/auth/user/change/password`,
+        method:'POST',
+        body: data
+      }),
+      invalidatesTags:['User']
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useDeleteUserMutation, useGetUsersQuery } = authApi;
+export const { useLoginMutation, useRegisterMutation, useDeleteUserMutation, useGetUsersQuery, useChangePasswordMutation } = authApi;
 
 export const authReducer = authApi.reducer;
 export default authApi;

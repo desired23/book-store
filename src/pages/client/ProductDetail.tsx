@@ -83,9 +83,9 @@ const ProductDetail = () => {
     const result = ((item.price - item.discount) / item.price).toFixed()
     return result
   }
-  const onFinish = (values: { quantity: number }) => {
+  const onFinish = async(values: { quantity: number }) => {
     if (user.isLoggedIn && id) {
-      addToCart({
+      await addToCart({
         bookId: id,
         quantity: values.quantity,
         price: book?.discount
