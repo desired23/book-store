@@ -1,5 +1,5 @@
 import { Rate } from 'antd';
-import React, { useEffect } from 'react'
+import  { useEffect } from 'react'
 import Slider, { CustomArrowProps } from "react-slick";
 import { useGetProductsQuery } from '../../api/product';
 import { useDispatch, useSelector } from 'react-redux';

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import  { useEffect } from 'react'
 import { useGetCartQuery, useUpdateCartMutation } from '../../api/cart'
 import { Button, Image, InputNumber } from 'antd';
 import { ICartState, loadCart, removeProductFromCart, updateCartItemQuantity } from '../../store/cart/cartSlice';

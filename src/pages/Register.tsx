@@ -1,4 +1,3 @@
-import React from 'react'
 import { Form, Button, Input, message } from 'antd';
 import { UserOutlined, MailFilled, LockOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useRegisterMutation } from '../api/auth';

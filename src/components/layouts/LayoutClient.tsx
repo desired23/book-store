@@ -1,5 +1,5 @@
 import { Badge, Button, Dropdown, MenuProps, Modal, Select, Tabs, TabsProps } from 'antd'
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import Login from '../../pages/Login';
 import Register from '../../pages/Register';

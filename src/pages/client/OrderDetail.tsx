@@ -1,5 +1,4 @@
 import { Button, Form, Image, Input, InputNumber, Radio, message } from 'antd'
-import React from 'react'
 import { ICartState, loadCart, removeProductFromCart, updateCartItemQuantity } from '../../store/cart/cartSlice';
 import { RootState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';

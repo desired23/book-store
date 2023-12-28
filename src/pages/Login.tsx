@@ -1,5 +1,4 @@
 import { Button, Checkbox, Form, Input, message } from 'antd'
-import React from 'react'
 import { LockOutlined, MailFilled } from '@ant-design/icons';
 import { useLoginMutation } from '../api/auth';
 import { ILoginRequest } from '../interfaces/auth';

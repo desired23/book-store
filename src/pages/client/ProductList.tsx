@@ -1,5 +1,5 @@
 import { Button, Card, Form, Input, InputNumber, List, Rate, Select, Space } from 'antd'
-import React, { useEffect } from 'react'
+import  { useEffect } from 'react'
 import { useGetProductsQuery } from '../../api/product';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
