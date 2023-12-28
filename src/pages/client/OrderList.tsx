@@ -14,7 +14,7 @@ interface DataType {
   _id: string;
   createdAt: string;
   totalPrice: number;
-  items: ItemType[];
+  items: { _id?: string, price: number, bookId: IBook, quantity: number }[];
   status: number;
 }
 const OrderList = () => {

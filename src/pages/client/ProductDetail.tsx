@@ -31,10 +31,10 @@ const ProductDetail = () => {
       {...props}
       className={
         "slick-next slick-arrow" +
-        (currentSlide === slideCount - 1 ? " slick-disabled" : "")
+        (currentSlide === Number(slideCount) - 1 ? " slick-disabled" : "")
       }
       aria-hidden="true"
-      aria-disabled={currentSlide === slideCount - 1 ? true : false}
+      aria-disabled={currentSlide === Number(slideCount) - 1 ? true : false}
       type="button"
     >
       <i className='fa fa-angle-right' aria-hidden='true'></i>

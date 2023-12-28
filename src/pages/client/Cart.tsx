@@ -74,8 +74,8 @@ const Cart = () => {
               </div>
               <div className="flex justify-center w-1/5">
                 <InputNumber
-                  formatter={(value) => `${parseInt(value, 10)}`}
-                  parser={(value) => parseInt(value, 10)}
+                  formatter={(value) => `${parseInt(String(value), 10)}`}
+                  parser={(value) => parseInt(String(value), 10)}
                   onChange={async (newQuantity) => {
                     if (Number.isInteger(newQuantity)) {
                       await handleChangeQuantity(itemCart.book?._id?itemCart.book?._id:'', newQuantity!);
