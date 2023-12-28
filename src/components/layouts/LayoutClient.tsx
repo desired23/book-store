@@ -75,7 +75,7 @@ const LayoutClient = () => {
   useEffect(() => {
     if (items) {
       const updatedItems = [...items];
-      if (authState.user?.role === "admin") {
+      if ((authState.user as any)?.role === "admin") {
         updatedItems[4] = {
           label: <Link to={`/admin/dashboard`} >Vào trang admin</Link>,
           key: 4
