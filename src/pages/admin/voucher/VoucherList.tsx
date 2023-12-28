@@ -11,14 +11,14 @@ import IVoucher from '../../../interfaces/voucher';
 interface DataType {
   key: string;
   title: string;
-  type: 'percent' | 'value' | 'Type3';
+  type: 'percent' | 'value' | 'promotion';
   code: string;
   quantity: number;
   discount: number;
   used: number;
   minOrderValue: number;
-  validFrom: Date;
-  validTo: Date;
+  validFrom: string;
+  validTo: string;
   role: string
 }
 
@@ -151,7 +151,7 @@ const VoucherList = () => {
       quantity: item.quantity,
       discount: item.discount,
       used: item.used,
-      minOrderValue: item.minOrderValue,
+      minOrderValue: item.minOrderValue || 0,
       validFrom: item.validFrom,
       validTo: item.validTo,
       role: item.role

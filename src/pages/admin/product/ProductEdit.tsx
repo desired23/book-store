@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Form, Input, Select, Upload, notification } from 'antd';
 import { useGetCategoriesQuery } from '../../../api/category';
 import { IBook } from '../../../interfaces/book';

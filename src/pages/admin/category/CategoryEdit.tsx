@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Button, Form, Input, notification } from 'antd';
 import { useGetCategoryByIdQuery, useUpdateCategoryMutation } from '../../../api/category';
 import { Link, useNavigate, useParams } from 'react-router-dom';

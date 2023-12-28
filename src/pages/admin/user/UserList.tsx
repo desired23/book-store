@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Divider, Input, Popconfirm, Radio, Select, Skeleton, Space, Table, notification } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { CategoryIdType } from '../../../interfaces/category';
