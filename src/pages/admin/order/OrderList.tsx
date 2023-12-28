@@ -131,7 +131,7 @@ const OrderManagementPage = () => {
                     return yearA - yearB;
                 }
             },
-            render: (text, record) => {
+            render: ( record) => {
                 const date = new Date(record.createdAt);
                 const day = date.getDate();
                 const month = date.getMonth() + 1; // Months are zero-based
