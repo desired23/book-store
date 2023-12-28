@@ -5,7 +5,7 @@ import { ICategory } from '../interfaces/category';
 const categoryApi = createApi({
   reducerPath: 'category',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8088/api/',
+    baseUrl: 'https://nodejs-bookstore.onrender.com/api/',
   }),
   tagTypes: ['Category'],
   endpoints: (builder) => ({

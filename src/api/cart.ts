@@ -10,7 +10,7 @@ import { RootState } from "../store/store";
 const cartApi = createApi({
   reducerPath: "cart",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8088/api/",
+    baseUrl: "https://nodejs-bookstore.onrender.com/api/",
     prepareHeaders(headers, {getState}) {
         const token = (getState() as RootState).user.token
         if (token) {

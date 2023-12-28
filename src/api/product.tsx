@@ -4,7 +4,7 @@ import { IBook } from '../interfaces/book'
 const productApi = createApi({
     reducerPath: 'product',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8088/api/'
+        baseUrl: 'https://nodejs-bookstore.onrender.com/api/'
     }),
     tagTypes: ['Book'],
     endpoints: (builder) => ({

@@ -4,7 +4,7 @@ import { AuthorIdType } from '../interfaces/author';
 const authorApi = createApi({
   reducerPath: 'author',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8088/api/',
+    baseUrl: 'https://nodejs-bookstore.onrender.com/api/',
   }),
   tagTypes: ['Author'],
   endpoints: (builder) => ({

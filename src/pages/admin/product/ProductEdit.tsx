@@ -67,7 +67,7 @@ const ProductEdit = () => {
 
     try {
       if ('publicId' in file){
-      await axios.delete(`http://localhost:8088/api/images/remove/${file.publicId}`);
+      await axios.delete(`https://nodejs-bookstore.onrender.com/api/images/remove/${file.publicId}`);
       notification.success({
         message: "Xóa ảnh thành công",
         duration: 5,
@@ -193,7 +193,7 @@ const ProductEdit = () => {
         >
           <Upload name='images'
             multiple
-            action={'http://localhost:8088/api/images/upload'}
+            action={'https://nodejs-bookstore.onrender.com/api/images/upload'}
             fileList={fileList}
             onChange={handleChange}
             listType="picture"

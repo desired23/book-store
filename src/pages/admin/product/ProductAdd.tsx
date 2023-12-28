@@ -45,7 +45,7 @@ const ProductAdd = () => {
         // console.log(file);
         
         try {
-            await axios.delete(`http://localhost:8088/api/images/remove/${file.response[0].publicId}`);
+            await axios.delete(`https://nodejs-bookstore.onrender.com/api/images/remove/${file.response[0].publicId}`);
 
             notification.success({
                 message: "Xóa ảnh thành công",
@@ -143,7 +143,7 @@ const ProductAdd = () => {
                 >
                     <Upload name='images'
                         multiple
-                        action={'http://localhost:8088/api/images/upload'}
+                        action={'https://nodejs-bookstore.onrender.com/api/images/upload'}
                         fileList={fileList}
                         onChange={handleChange}
                         listType="picture"
